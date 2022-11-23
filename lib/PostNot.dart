@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'qrcodeWriter.dart';
+import 'package:localstorage/localstorage.dart';
 
-String URL = "https://www.slmm.com.br/CTC/pdmIns.php";
+String URL = "https://httpbin.org/post";
+final LocalStorage storage = new LocalStorage('localstorage_app');
 
 Future<String> fetchData() async {
   Map data = {'ra': '12345', 'lati': '23.00', 'longi': '-47.00', 'foto': ""};
@@ -14,10 +16,31 @@ Future<String> fetchData() async {
   var response = await http.post(Uri.parse(URL),
       headers: {"Content-Type": "application/json"}, body: body);
   if (response.statusCode == 200) {
+    String json2 = json.encode(response.body);
+    addItemsToLocalStorage();
     return response.body;
   } else {
     throw Exception('Erro inesperado');
   }
+}
+
+void addItemsToLocalStorage() {
+  storage.setItem('name', 'Abolfazl');
+  storage.setItem('family', 'Roshanzamir');
+
+  final info = json.encode({'name': 'Darush', 'family': 'Roshanzami'});
+  storage.setItem('info', info);
+}
+
+void getitemFromLocalStorage() {
+  final name = storage.getItem('name'); // Abolfazl
+  final family = storage.getItem('family'); // Roshanzamir
+
+  Map<String, dynamic> info = json.decode(storage.getItem('info'));
+  final info_name = info['name'];
+  final info_family = info['family'];
+  print(info_name);
+  print(info_family);
 }
 
 class PostNot extends StatefulWidget {
@@ -86,14 +109,16 @@ class _PostNotState extends State<PostNot> {
                   _dadosF = null;
                 });
               },
-              child: Text("Enviar"))
-              ,ElevatedButton(
+              child: Text("Enviar")),
+          ElevatedButton(
               onPressed: () {
-                Navigator.push(context,MaterialPageRoute(
-                  builder: (context) => const QrcodeWriter(), 
-                ));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const QrcodeWriter(),
+                    ));
               },
-              child: Text("Tirar foto")),
+              child: Text("Pegar a api")),
           (_dadosF == null) ? botao() : buildFutureBuilder(),
         ]),
       ),
