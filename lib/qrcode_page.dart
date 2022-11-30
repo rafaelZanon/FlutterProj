@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-
+import 'package:localstorage/localstorage.dart';
+import 'dart:convert';
 class QRCodePage extends StatefulWidget {
   const QRCodePage({Key? key}) : super(key: key);
 
   @override
   State<QRCodePage> createState() => _QRCodePageState();
+}
+final LocalStorage storage = new LocalStorage('localstorage_app');
+
+void addItemsToLocalStorage(item) {
+  // storage.setItem('name', 'Abolfazl');
+  // storage.setItem('family', 'Roshanzamir');
+
+  final info = json.encode({'apiUrl': item});
+  storage.setItem('info', info);
+  getitemFromLocalStorage();
+}
+
+void getitemFromLocalStorage() {
+
+  Map<String, dynamic> info = json.decode(storage.getItem('info'));
+
+  print(info['apiUrl']);
+ 
 }
 
 class _QRCodePageState extends State<QRCodePage> {
@@ -21,6 +40,7 @@ class _QRCodePageState extends State<QRCodePage> {
     );
     setState(() => ticket = code != '-1' ? code : 'Não validado');
 
+    addItemsToLocalStorage(ticket);
     // Stream<dynamic>? reader = FlutterBarcodeScanner.getBarcodeStreamReceiver(
     //   "#FFFFFF",
     //   "Cancelar",

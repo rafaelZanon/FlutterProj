@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'qrcode_page.dart';
+import 'package:localstorage/localstorage.dart';
 
 class QrcodeWriter extends StatelessWidget {
   const QrcodeWriter({Key? key}) : super(key: key);
